@@ -16,15 +16,30 @@ std::string convToLower(std::string src)
 std::set<std::string> parseStringToWords(string rawWords)
 {
 
+    set<string> setWords; 
+    rawWords = trim(rawWords); 
+    string keyword = "";
 
+    for (size_t i = 0; i < rawWords.size(); i++ )
+    {
+        if (rawWords[i] != ' ' && !ispunct(rawWords[i])){
+            keyword += rawWords[i];
+    
+            if (i == rawWords.size() - 1 && keyword.size() >= 2)
+            {
+                setWords.insert(keyword);
+            }
 
+        } else {
+            if (keyword.size() >= 2) 
+            {
+                setWords.insert(keyword);
+            }
+            keyword = "";
+        }
+    }
 
-
-
-
-
-
-
+    return setWords;
 }
 
 /**************************************************

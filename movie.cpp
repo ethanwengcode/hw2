@@ -15,7 +15,7 @@ std::set<std::string> Movie::keywords() const {
     std::set<std::string> keywords = parseStringToWords(lowerName);
     
     // also, add genre as a keyword
-    keywords.insert(genre_);
+    keywords.insert(convToLower(genre_));
 
     return keywords;
 }

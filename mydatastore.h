@@ -28,7 +28,7 @@ private:
     std::vector<Product*> products_;
     std::unordered_map<std::string, User*> users_;
     std::unordered_map<std::string, std::set<Product*>> keywordMap_;
-    std::unordered_map<std::string, std::queue<Product*>> userCart_;
+    std::unordered_map<std::string, std::vector<Product*>> userCart_;
 };
 
 #endif

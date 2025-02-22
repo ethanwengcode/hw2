@@ -100,42 +100,41 @@ int main(int argc, char* argv[])
                 }
                 done = true;
             }
-	    /* Add support for other commands here */
-          else if( cmd == "AND" ) {
-            string username;
-            size_t index;
-            // inputs are valid
-            if( ss >> username >> index ) {
-                // valid index
-                if(index > 0 && index <= hits.size()) {
-                    ds.addToCart(username, hits[index-1]);
-                } else {
-                    cout << "Invalid request" << endl;
-                }
+            else if( cmd == "ADD" ) {
+              string username;
+              size_t index;
+              // inputs are valid
+              if( ss >> username >> index ) {
+                  // valid index
+                  if(index > 0 && index <= hits.size()) {
+                      ds.addToCart(username, hits[index-1]);
+                  } else {
+                      cout << "Invalid request" << endl;
+                  }
+              }
+              else {
+                  cout << "Invalid request" << endl;
+              }
             }
-            else {
-                cout << "Invalid request" << endl;
+            else if( cmd == "VIEWCART" ) {
+              string username;
+              // input is valid
+              if( ss >> username ) {
+                  ds.viewCart(convToLower(username));
+              }
+              else {
+                  cout << "Invalid username" << endl;
+              }
             }
-          }
-          else if( cmd == "VIEWCART" ) {
-            string username;
-            // input is valid
-            if( ss >> username ) {
-                ds.viewCart(convToLower(username));
+            else if( cmd == "BUYCART" ) {
+              string username;
+              // input is valid
+              if( ss >> username) {
+                  ds.buyCart(convToLower(username));
+              } else {
+                  cout << "Invalid username" << endl;
+              }
             }
-            else {
-                cout << "Invalid username" << endl;
-            }
-          }
-          else if( cmd == "BUYCART" ) {
-            string username;
-            // input is valid
-            if( ss >> username) {
-                ds.buyCart(convToLower(username));
-            } else {
-                cout << "Invalid username" << endl;
-            }
-          }
             else {
                 cout << "Unknown command" << endl;
             }

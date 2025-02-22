@@ -3,9 +3,13 @@
 #include <iostream>
 #include <fstream>
 
-MyDataStore::MyDataStore() {}
+MyDataStore::MyDataStore(){
 
-MyDataStore::~MyDataStore() {}
+}
+
+MyDataStore::~MyDataStore(){
+    
+}
 
 void MyDataStore::addProduct(Product* product) {
     products_.push_back(product);
@@ -14,8 +18,9 @@ void MyDataStore::addProduct(Product* product) {
     std::set<std::string> keywords = product->keywords();
 
     // associate product with its keywords
-    for (const std::string& key : keywords) {
-        keywordMap_[key].insert(product);
+    std::set<std::string>::iterator it;
+    for (it = keywords.begin(); it != keywords.end(); ++it) {
+        keywordMap_[*it].insert(product);
     }
 }
 
@@ -25,8 +30,8 @@ void MyDataStore::addUser(User* user) {
 
 std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int type) {
     std::set<Product*> resultSet;
-    for (std::string term : terms) {
-        term = convToLower(term);
+    for (size_t i = 0; i < terms.size(); i++) {
+        std::string term = convToLower(terms[i]);
         if (keywordMap_.find(term) != keywordMap_.end()) { // found term 
             // first search
             if (resultSet.empty()) {
@@ -39,7 +44,6 @@ std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int t
                     resultSet = setIntersection(resultSet, keywordMap_[term]);
                 }
             }
-
         }
     }
     // convert to a vector 
@@ -47,13 +51,12 @@ std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int t
 }
 
 void MyDataStore::addToCart(const std::string& username, Product* product) {
-    // find username
-    if (users_.find(username) != users_.end()) {
-        // add product to user's cart
-        userCart_[username].push(product);
-    } else {
-        std::cout << "Invalid request\n";
-    }
+  if(users_.find(username) == users_.end()){
+    std::cout << "Invalid request" << std::endl;
+  }
+  else {
+    userCart_[username].push_back(product);
+  }
 }
 
 void MyDataStore::viewCart(const std::string& username) {
@@ -63,12 +66,9 @@ void MyDataStore::viewCart(const std::string& username) {
         return;
     }
     // get user's cart
-    std::queue<Product*> cart = userCart_[username];
-    int index = 1;
-    while (!cart.empty()) {
-        std::cout << "Item " << index << "\n" << cart.front()->displayString() << std::endl;
-        index++;
-        cart.pop();
+    std::vector<Product*> cart = userCart_[username];
+    for(size_t i = 0; i < cart.size(); i++){
+      std::cout << "Item " << i+1 << "\n" << cart[i]->displayString() << std::endl;
     }
 }
 
@@ -80,22 +80,19 @@ void MyDataStore::buyCart(const std::string& username) {
     }
 
     // get user's cart
-    std::queue<Product*>& cart = userCart_[username];
-    std::queue<Product*> newCart;
+    std::vector<Product*>& cart = userCart_[username];
+    std::vector<Product*> newCart;
     
-    while (!cart.empty()) {
-        // get first item
-        Product* p = cart.front();
-        cart.pop();
-        
-        // item is available and user has enough money
+    for(size_t i = 0; i <cart.size(); i++){
+      Product* p = cart[i];
+       // item is available and user has enough money
         if (p->getQty() > 0 && users_[username]->getBalance() >= p->getPrice()) {
             // update user's balance and item's inventory 
             p->subtractQty(1);
             users_[username]->deductAmount(p->getPrice());
         } else { 
             // keep item in user's cart 
-            newCart.push(p);
+            newCart.push_back(p);
         }
     }
     // update user's cart to be remaining (if any) items
@@ -104,16 +101,24 @@ void MyDataStore::buyCart(const std::string& username) {
 
 void MyDataStore::dump(std::ostream& ofile) {
     ofile << "<products>\n";
-    for (size_t i = 0; i < products_.size(); i++) {
-        products_[i]->dump(ofile);
+    for (std::vector<Product*>::iterator it = products_.begin(); it != products_. end(); ++it) {
+        (*it)->dump(ofile);
     }
     ofile << "</products>\n";
     
     ofile << "<users>\n";
-    std::unordered_map<std::string, User*>::iterator it;
-    for(it = users_.begin(); it != users_.end(); ++it) {
+    for(std::unordered_map<std::string, User*>::iterator it = users_.begin(); it != users_.end(); ++it) {
         User* u = it->second;
         u->dump(ofile);
     }
     ofile << "</users>\n";
+
+    // deallocate 
+    for(size_t i = 0; i < products_.size(); i++){
+      delete products_[i];
+    }
+    for (std::unordered_map<std::string, User *>::iterator it = users_.begin(); it != users_.end(); ++it){
+        delete (it->second);
+    }
+    users_.clear();
 }

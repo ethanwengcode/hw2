@@ -20,11 +20,7 @@ ProductParser::~ProductParser()
 }
 
 
-Product* ProductParser::parse(string category,
-                              istream& is,
-                              bool& error,
-                              string& errorMsg,
-                              int& lineno)
+Product* ProductParser::parse(string category, istream& is, bool& error, string& errorMsg, int& lineno)
 {
 
     parseCommonProduct(is, error, errorMsg, lineno);

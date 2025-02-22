@@ -1,29 +1,34 @@
-#ifndef BOOK_H
-#define BOOK_H
+#include "clothing.h"
+#include "util.h"
 
-#include "product.h"
-#include <string>
+Clothing::Clothing(const std::string& name, double price, int qty, 
+                   const std::string& size, const std::string& brand) 
+    : Product("clothing", name, price, qty), size_(size), brand_(brand) {}
 
-class Book : public Product {
-    public:
-        // Constructor
-        Book(const std::string& name, double price, int qty, const std::string& isbn, const std::string& author);
-    
-        // Destructor
-        ~Book();
-    
-        // returns set of keywords associated with book
-        std::set<std::string> keywords() const;
+Clothing::~Clothing() {}
 
-        // display book's details
-        std::string displayString() const;
-    
-        // writes book info to output stream
-        void dump(std::ostream& os) const;
-    
-    protected:
-        std::string isbn_;
-        std::string author_;
-    };
-    
-    #endif
+std::set<std::string> Clothing::keywords() const {
+    // convert strings to lower case
+    std::string lowerName = convToLower(name_);
+    std::string lowerBrand = convToLower(brand_);
+
+    // get associated keywords
+    std::set<std::string> keywords = parseStringToWords(lowerName);
+    std::set<std::string> brandKeywords = parseStringToWords(lowerBrand);
+
+    keywords.insert(brandKeywords.begin(), brandKeywords.end());
+
+    return keywords;
+}
+
+std::string Clothing::displayString() const {
+    std::string result = name_ + "\n";
+    result += " Size: " + size_ + " Brand: " + brand_ + "\n";
+    result += std::to_string(price_) + " " + std::to_string(qty_) + " left.";
+    return result;
+}
+
+void Clothing::dump(std::ostream& os) const {
+    Product::dump(os);
+    os << size_ << "\n" << brand_ << std::endl;
+}
